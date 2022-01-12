@@ -1,0 +1,178 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+All variables at stored in the environment window to the right under the names associated with the variables in each code chunk
+
+1) Producing Boxplots
+
+```{r}
+#reading in data
+elephant_data <- read.csv('/Users/sm42/University/2019.20/StatisticsForBiology/01.06.20/ElephantData.csv')
+```
+
+```{r}
+#basic boxplot production
+boxplot(elephant_data, ylab="Ramus Width (mm)")
+```
+
+```{r}
+#calculating stanard deviations
+amboseli_sd <- sd(elephant_data$Amboseli)
+mikumi_sd <- sd(elephant_data$Mikumi)
+```
+
+```{r}
+#calculating sample size
+amboseli_ss <- length(elephant_data$Amboseli)
+mikumi_ss <- length(elephant_data$Mikumi)
+```
+
+```{r}
+#calculating standard error
+amboseli_se <- amboseli_sd / sqrt(amboseli_ss)
+mikumi_se <- mikumi_sd / sqrt(mikumi_ss)
+```
+
+```{r}
+#calculating t value for 95% confidence interval for 9 degree of freedom
+t_value = qt(0.975, amboseli_ss - 1)
+```
+
+```{r}
+#calculating mean
+amboseli_mean <- mean(elephant_data$Amboseli)
+mikumi_mean <- mean(elephant_data$Mikumi)
+```
+
+```{r}
+#calculating upper confidence intervals
+amboseli_uc <- amboseli_mean + (t_value * amboseli_se)
+mikumi_uc <- mikumi_mean + (t_value * mikumi_se)
+```
+
+```{r}
+#calculating lower confidence intervals
+amboseli_lc <- amboseli_mean - (t_value * amboseli_se)
+mikumi_lc <- mikumi_mean - (t_value * mikumi_se)
+```
+
+2) Statistical tests
+
+a) 2 Way Chi Square Test:
+
+```{r}
+#reading in data
+chi_data <- read.csv('/Users/sm42/University/2019.20/StatisticsForBiology/15.06.20/TwoWayChiSquaredData.csv')
+```
+
+```{r}
+#performing 2 way chi-square test
+chi_result <- chisq.test(tapply(chi_data$grptype,list(chi_data$season, chi_data$grptype),length))
+```
+
+```{r}
+#generating chi square test output with all relevant variables
+paste('Statistic =', round(chi_result$statistic, 2),
+      ', Degrees of Freedom =', round(chi_result$parameter, 2),
+      ', P-value=', round(chi_result$p.value, 6))
+```
+
+b) T Test:
+
+```{r}
+#reading in data
+t_data <- read.csv('/Users/sm42/University/2019.20/StatisticsForBiology/15.06.20/TTestData.csv')
+```
+
+```{r}
+#performing t-test
+t_result = t.test(t_data$bmd~t_data$sex, var.equal=TRUE)
+```
+
+```{r}
+#generating t-test output with all relevant variables
+paste('Statistic =', round(t_result$statistic, 2),
+      ', Degrees of Freedom =', round(t_result$parameter, 2),
+      ', P-value=', round(t_result$p.value, 6),
+      ', Lower 95% Confidence Interval =', round(t_result$conf.int[1],6), 
+      ', Upper 95% Confidence Interval =', round(t_result$conf.int[2],6),
+      ', Mean of x variable (female) =', round(t_result$estimate[1],6), 
+      ', Mean of y variable (male) =', round(t_result$estimate[2],6),
+      ', Effect Size (difference between the means) =', max(t_result$estimate) - min(t_result$estimate))
+```
+
+c) Mann-Whitney-U Test:
+
+```{r}
+#reading in data
+mann_data <- read.csv('/Users/sm42/University/2019.20/StatisticsForBiology/15.06.20/MannWhitUData.csv')
+```
+
+```{r}
+#performing Mann-Whitney-U test
+mann_result <- wilcox.test(mann_data$bmd~mann_data$sex, conf.int=TRUE)
+```
+
+```{r}
+#generating Mann-Whitney-U test output with all relevant variables
+paste('Statistic =', round(mann_result$statistic, 2),
+      ', P-value=', round(mann_result$p.value, 6),
+      ', Lower 95% Confidence Interval =', round(mann_result$conf.int[1],6), 
+      ', Upper 95% Confidence Interval =', round(mann_result$conf.int[2],6),
+      ', Effect Size (difference between the means) =', round(mann_result$estimate, 6))
+```
+
+d) Paired T Test:
+
+```{r}
+#reading in data
+paired_data <- read.csv('/Users/sm42/University/2019.20/StatisticsForBiology/15.06.20/PairedTTestData.csv')
+```
+
+```{r}
+#performing paired t-test
+paired_result <- t.test(paired_data$percgr.wo, paired_data$percgr.w, paired = TRUE)
+```
+
+```{r}
+#generating paired t-test output with all relevant variables
+paste('Statistic =', round(paired_result$statistic, 2),
+      ', Degrees of Freedom =', round(paired_result$parameter, 2),
+      ', P-value=', round(paired_result$p.value, 6),
+      ', Lower 95% Confidence Interval =', round(paired_result$conf.int[1],6), 
+      ', Upper 95% Confidence Interval =', round(paired_result$conf.int[2],6),
+      ', Effect Size (difference between the means) =', round(paired_result$estimate, 6))
+```
+
+3) Plotting Bar Graphs and Histograms
+
+```{r}
+#need to import this library to use functions to plot bar graphs and histograms
+library(ggplot2)
+```
+
+```{r}
+#reading in data
+frequency_data <- read.csv('/Users/sm42/University/2019.20/StatisticsForBiology/25.05.20/Frequency_data.csv')
+```
+
+```{r}
+#reading in data
+histogram_data <- read.csv('/Users/sm42/University/2019.20/StatisticsForBiology/25.05.20/Histogram_data.csv')
+```
+
+```{r}
+#setting up bar graph variable and plotting bar graph
+frequency_plot <- ggplot(data = frequency_data, aes(x = frequency_data$NumbeofTrees, y = frequency_data$NumberofRookeries)) + geom_col()
+frequency_plot + labs(x = colnames(frequency_data[1]), y =colnames(frequency_data[2]))
+```
+
+```{r}
+#setting up histrogram variable and plotting histogram
+histogram_plot <- ggplot(data = histogram_data, aes(x = histogram_data$LengthofClass, y = histogram_data$NumberofSperm)) +                        geom_histogram(stat="identity")
+histogram_plot + labs(x = colnames(histogram_data[1]), y =colnames(histogram_data[2]))
+```
+
+

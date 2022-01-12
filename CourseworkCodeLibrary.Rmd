@@ -171,7 +171,7 @@ frequency_plot + labs(x = colnames(frequency_data[1]), y =colnames(frequency_dat
 
 ```{r}
 #setting up histrogram variable and plotting histogram
-histogram_plot <- ggplot(data = histogram_data, aes(x = histogram_data$LengthofClass, y = histogram_data$NumberofSperm)) +                        geom_histogram(stat="identity")
+histogram_plot <- ggplot(data = histogram_data, aes(x = histogram_data$LengthofClass, y = histogram_data$NumberofSperm)) + geom_histogram(stat="identity")
 histogram_plot + labs(x = colnames(histogram_data[1]), y =colnames(histogram_data[2]))
 ```
 
